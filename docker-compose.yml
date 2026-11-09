@@ -1,0 +1,31 @@
+# Run `npm run setup` first, which creates .env. Only the gateway is published;
+# Flask is reachable only inside the compose network.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    volumes:
+      - data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:5000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    env_file: .env
+    environment:
+      BACKEND_URL: http://backend:5000
+    ports:
+      - "4000:4000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  data:

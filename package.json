@@ -1,0 +1,22 @@
+{
+  "name": "email-automation-intelligence-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["gateway", "frontend"],
+  "scripts": {
+    "setup": "npm install && node scripts/setup.mjs",
+    "py": "node scripts/py.mjs",
+    "seed": "node scripts/py.mjs -m app.cli seed",
+    "dev": "concurrently -n flask,node,react -c blue,green,magenta \"npm run dev:backend\" \"npm run dev -w gateway\" \"npm run dev -w frontend\"",
+    "dev:backend": "node scripts/py.mjs -m flask --app wsgi run --port 5000 --debug",
+    "test": "npm run test:backend && npm test -w gateway && npm test -w frontend",
+    "test:backend": "node scripts/py.mjs -m pytest -q",
+    "build": "npm run build -w frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
